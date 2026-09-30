@@ -6,6 +6,8 @@
 //    a frame-ancestors header, and the meta form of it is ignored by browsers.
 //  - The session is kept in memory only: every Pages site on this account shares one origin,
 //    so nothing is left in localStorage for another page to read.
+//  - An already-approved request shows where it returns and waits for Continue; it never
+//    follows a redirect the user hasn't seen.
 //  - After approve/deny, the page only navigates to a URL that starts with the redirect URI it
 //    showed the user.
 (function () {
@@ -71,6 +73,23 @@
     window.location.assign(redirectUrl);
   }
 
+  function alreadyApproved(redirectUrl) {
+    let host = "";
+    try { host = new URL(redirectUrl).host; } catch { host = ""; }
+    show(
+      el("h1", {}, "Already approved"),
+      el("p", {}, "You've already approved this app. It will return you to the address below."),
+      el("dl", {},
+        el("dt", {}, "App"), el("dd", { id: "client-name" }, "(Supabase doesn't give the app's name for an app you've already approved)"),
+        el("dt", {}, "Returns you to"), el("dd", { id: "redirect-host" }, host || "(unreadable address)"),
+        el("dt", {}, "Full address"), el("dd", { id: "redirect-url" }, redirectUrl),
+      ),
+      el("div", { class: "actions" },
+        el("button", { type: "button", id: "continue", onclick: () => window.location.assign(redirectUrl) }, "Continue"),
+      ),
+    );
+  }
+
   async function consent() {
     const { data, error } = await client.auth.oauth.getAuthorizationDetails(authorizationId);
     if (error || !data) {
@@ -78,8 +97,10 @@
       return;
     }
     if (!("authorization_id" in data)) {
-      // Already approved before: Supabase returns the finished redirect. Not framed (checked above).
-      window.location.assign(data.redirect_url);
+      // Already approved before: Supabase returns only the finished redirect (no app name).
+      // Show where it goes and wait for the user; never follow a redirect they haven't seen.
+      // (Not framed: checked at the top.)
+      alreadyApproved(data.redirect_url);
       return;
     }
     const decide = async (approve) => {

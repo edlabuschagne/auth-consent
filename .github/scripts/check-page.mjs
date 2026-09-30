@@ -32,6 +32,10 @@ check(frameAt >= 0 && frameAt < firstAction, "the frame check comes before any s
 check(/window\.top !== window\.self\)\s*\{[\s\S]{0,300}?return;/.test(js), "a framed page returns before rendering anything actionable");
 check(/redirect_uri/.test(js) && /client\.name/.test(js), "the page shows the client name and redirect URI");
 check(/skipBrowserRedirect: true/.test(js), "approve/deny never navigate on their own");
+check(!/window\.location\.assign\(\s*data\.redirect_url\s*\)/.test(js), "an already-approved redirect is never followed without being shown");
+check(/"continue"[\s\S]{0,80}onclick: \(\) => window\.location\.assign\(redirectUrl\)/.test(js), "the already-approved path navigates only when Continue is clicked");
+check(/You've already approved this app/.test(js) && /id: "redirect-url" \}, redirectUrl/.test(js), "the already-approved screen shows the full return address");
+check(/id: "deny"/.test(js) && /id: "approve"/.test(js), "a fresh request offers both Approve and Deny");
 
 check(!new RegExp("sb_" + "secret_").test(cfg), "config.js has no secret key");
 check(!new RegExp("eyJhbG" + "ciOi").test(cfg), "config.js has no JWT (legacy anon or service-role key)");
