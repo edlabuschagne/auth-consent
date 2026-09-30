@@ -1,0 +1,3 @@
+supabase-js 2.117.2, browser bundle: dist/umd/supabase.js from the npm package @supabase/supabase-js@2.117.2 (npm pack), copied unchanged.
+sha256 59d39487c3589843b410322d8a3d562ce022aba1e5ccb16898ef3fb2a0da2ecd
+Licence: MIT (LICENSE-supabase-js).

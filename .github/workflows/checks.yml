@@ -1,0 +1,24 @@
+name: checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # the secrets scan reads the full history
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Secrets scan across the full git history
+        run: node .github/scripts/secrets-scan.mjs
+      - name: Page checks (scripts from this site only, frame guard, what's shown, no secret)
+        run: node .github/scripts/check-page.mjs
