@@ -2,5 +2,5 @@
 // it grants nothing on its own). NEVER put the project's secret key or service-role key here.
 window.AUTH_CONSENT_CONFIG = {
   supabaseUrl: "https://gyymqbhdqovqujrybzex.supabase.co",
-  publishableKey: "PASTE_THE_PUBLISHABLE_KEY_HERE", // sb_publishable_… from Project Settings → API Keys
+  publishableKey: "sb_publishable_Uy6kZB4Je0YWM7dxtfxCQg_EaHIMxEg", // from Project Settings → API Keys (public by design)
 };
